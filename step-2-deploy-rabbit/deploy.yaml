@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    component: rabbitmq
+  name: rabbitmq
+spec:
+  serviceName: rabbitmq
+  replicas: 1
+  selector:
+    matchLabels:
+      component: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: taskQueue
+        component: rabbitmq
+    spec:
+      containers:
+      - image: rabbitmq:3-management-alpine
+        name: rabbitmq
+        ports:
+          - name: http
+            protocol: TCP
+            containerPort: 15672
+          - name: amqp
+            protocol: TCP
+            containerPort: 5672
+          - name: epmd
+            containerPort: 4369
+        resources:
+          limits:
+            cpu: 100m
+        imagePullPolicy: Always
+      #volumes:
+      #  - name: config-volume
+      #    configMap:
+      #      name: rabbitmq-config
+      #      items:
+      #      - key: rabbitmq.conf
+      #        path: rabbitmq.conf
+      #      - key: enabled_plugins
+      #        path: enabled_plugins
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-management
+  labels:
+    component: rabbitmq
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8888
+      targetPort: 15672
+      name: http
+  selector:
+    component: rabbitmq
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  labels:
+    component: rabbitmq
+spec:
+  ports:
+  - port: 5672
+  selector:
+    app: taskQueue
+    component: rabbitmq

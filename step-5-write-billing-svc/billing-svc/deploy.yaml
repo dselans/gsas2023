@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-svc-deployment
+spec:
+  selector:
+    matchLabels:
+      app: billing-svc
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: billing-svc
+    spec:
+      containers:
+        - name: billing-svc
+          image: dselans/billing-svc
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8282
+          env:
+            - name: BILLING_SVC_ENV_NAME
+              value: "dev"
+            - name: BILLING_SVC_DEBUG
+              value: "true"
+            - name: BILLING_SVC_NATS_URL
+              value: "nats://gsas-nats:4222"
+            - name: BILLING_SVC_NATS_USE_TLS
+              value: "false"
+            - name: BILLING_SVC_NATS_NUM_BUCKET_REPLICAS
+              value: "3"
+            - name: BILLING_SVC_ISB_SHARED_URL
+              value: "amqp://rabbitmq-service"
+
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: 8282
+            initialDelaySeconds: 30
+            periodSeconds: 5

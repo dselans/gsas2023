@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: welcome-svc-deployment
+spec:
+  selector:
+    matchLabels:
+      app: welcome-svc
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: welcome-svc
+    spec:
+      containers:
+        - name: welcome-svc
+          image: dselans/welcome-svc:2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8282
+          env:
+            - name: WELCOME_SVC_ENV_NAME
+              value: "dev"
+            - name: WELCOME_SVC_DEBUG
+              value: "true"
+            - name: WELCOME_SVC_NATS_URL
+              value: "nats://gsas-nats:4222"
+            - name: WELCOME_SVC_NATS_USE_TLS
+              value: "false"
+            - name: WELCOME_SVC_NATS_NUM_BUCKET_REPLICAS
+              value: "3"
+            - name: WELCOME_SVC_ISB_SHARED_URL
+              value: "amqp://rabbitmq-service"
+
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: 8282
+            initialDelaySeconds: 30
+            periodSeconds: 5

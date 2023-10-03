@@ -1,0 +1,12 @@
+{
+    "event_type": 0,
+    "data": {
+        "email": "foo2@bar2.com",
+        "first_name": "FooFirstName",
+        "last_name": "BarLastName",
+        "country_code": "lv",
+        "source_ip": "1.1.1.1",
+        "browser": "FakeBrowser1.0",
+        "occurred_at_utc": "2023-10-03T00:54:38Z"
+    }
+}

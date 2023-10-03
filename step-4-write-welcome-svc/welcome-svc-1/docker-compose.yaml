@@ -1,0 +1,20 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:3.7.8-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./backend-data/rabbitmq:/var/lib/rabbitmq
+    container_name: rabbitmq
+
+  natsjs:
+    image: nats:2.8.1-alpine3.15
+    ports:
+      - "4222:4222" # NATS Port
+      - "6222:6222"
+      - "8222:8222" # HTTP Monitor
+    volumes:
+      - ${PWD}/backend-data/jetstream:/data/jetstream
+      - ${PWD}/assets/nats-server.conf:/etc/nats/nats-server.conf
