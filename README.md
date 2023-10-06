@@ -22,7 +22,7 @@ for that specific step. Start with [step 1](./step-1-setup-kubernetes/README.md)
 NOTE: This entire workshop has been written and tested on MacOS. It should work
 on Linux and Windows with some _minor_ modifications, but no promises.
 
-You will need to have installed:
+Optimally, you SHOULD have:
 
 - Basic understanding of [Docker](https://docs.docker.com/get-docker/)
 - An IDE of some sort (VSCode, IntelliJ, etc.)
